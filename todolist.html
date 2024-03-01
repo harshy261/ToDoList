@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+
+    <style>
+        
+        .right {
+            position: absolute;
+            top: 93px;
+            right: 20px;
+            display: inline-block;
+        }
+
+        .btn {
+            margin: 13px 3px;
+            background-color: black;
+            color: white;
+            border: 2px solid grey;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: cursive;
+
+        }
+
+        .btn :hover {
+            margin: 13px 3px;
+            background-color: rgb(255, 255, 255);
+            color: rgb(0, 0, 0);
+            border: 2px solid grey;
+            border-radius: 5px;
+            padding: 2px 10px;
+            cursor: pointer;
+            font-family: cursive;
+            transform: translateY(4px);
+
+        }
+
+        .btn:active {
+            background-color: #1d201d;
+            box-shadow: 5px 5px 5px #666;
+            transform: translateY(4px);
+        }
+
+
+
+
+        /* TODOLIST */
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        input[type=text],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        input[type=submit] {
+            background-color: #04AA6D;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+
+        .container {
+            border-radius: 5px;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+
+
+        /* YOUR ITEMS */
+
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 16px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- To do part -->
+    <h2>TO DO LIST</h2>
+
+    <div class="container">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="firstname" placeholder="Write Your Title Here..">
+
+        <label for="description">Description</label>
+        <textarea id="description" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+
+        <button class="btn" id="add">Add to List</button>
+        <button id="clear" onclick="clearStorage()">Clear list</button>
+
+    </div>
+
+    <!-- Items part -->
+    <div id="items">
+        <h2>Your Items</h2>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>S.no.</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <tr>
+                <td>1</td>
+                <td>Smith</td>
+                <td>This is my Description</td>
+                <td><button class="btnnn">Delete</button></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Jackson</td>
+                <td>This is descri</td>
+                <td><button class="btnnn">Delete</button></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Johnson</td>
+                <td>This is is tshs</td>
+                <td><button class="btnnn">Delete</button></td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+</body>
+
+<script>
+
+
+    function getAndUpdate() {
+        console.log("Updating List...");
+        tit = document.getElementById('title').value;
+        desc = document.getElementById('description').value;
+        if (localStorage.getItem('itemsJson') == null) {
+            itemJsonArray = [];
+            itemJsonArray.push([tit, desc]);
+            localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+        }
+        else {
+            itemJsonArrayStr = localStorage.getItem('itemsJson')
+            itemJsonArray = JSON.parse(itemJsonArrayStr);
+            itemJsonArray.push([tit, desc]);
+            localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+        }
+        update();
+    }
+
+    function update() {
+        if (localStorage.getItem('itemsJson') == null) {
+            itemJsonArray = [];
+            localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray))
+        }
+        else {
+            itemJsonArrayStr = localStorage.getItem('itemsJson')
+            itemJsonArray = JSON.parse(itemJsonArrayStr);
+        }
+
+
+
+        // Populate the table
+        let tableBody = document.getElementById("tableBody");
+        let str = "";
+        itemJsonArray.forEach((element, index) => {
+            str += `
+                    <tr>
+                    <th>${index + 1}</th>
+                    <td>${element[0]}</td>
+                    <td>${element[1]}</td> 
+                    <td><button class="btnnn" onclick="deleted(${index})">Delete</button></td> 
+                    </tr>`;
+        });
+        tableBody.innerHTML = str;
+    }
+    add = document.getElementById("add");
+    add.addEventListener("click", getAndUpdate);
+    update();
+    function deleted(itemIndex) {
+        console.log("Delete", itemIndex);
+        itemJsonArrayStr = localStorage.getItem('itemsJson')
+        itemJsonArray = JSON.parse(itemJsonArrayStr);
+
+        // Delete itemIndex element from the array
+        itemJsonArray.splice(itemIndex, 1);
+        localStorage.setItem('itemsJson', JSON.stringify(itemJsonArray));
+        update();
+
+    }
+    function clearStorage() {
+        if (confirm("Do you areally want to clear?")) {
+            console.log('Clearing the storage')
+            localStorage.clear();
+            update()
+        }
+    }
+</script>
+
+</html>
